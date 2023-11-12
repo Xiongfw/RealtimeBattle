@@ -1,0 +1,8 @@
+{
+  "name": "@game/client",
+  "uuid": "27e2aa96-9915-4e76-86ff-ed57242f49a9",
+  "creator": {
+    "version": "3.8.0"
+  },
+  "description": "Node.js、实时对战、IO、帧同步"
+}

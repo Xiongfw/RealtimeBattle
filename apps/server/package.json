@@ -1,0 +1,12 @@
+{
+  "name": "@game/server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node ./src/index -e ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
