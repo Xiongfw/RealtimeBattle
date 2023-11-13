@@ -1,5 +1,5 @@
 import Singleton from '../base/Singleton';
-import { IActor, IActorMove, IState } from '../common';
+import { EntityTypeEnum, IActor, IActorMove, IState } from '../common';
 import { JoyStickManager } from '../ui/JoyStickManager';
 
 export const ACTOR_SPEED = 100;
@@ -13,6 +13,7 @@ export default class DataManager extends Singleton {
     actors: [
       {
         id: 1,
+        type: EntityTypeEnum.Actor1,
         position: {
           x: 0,
           y: 0,
