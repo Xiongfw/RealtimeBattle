@@ -1,3 +1,4 @@
+import { SpriteFrame } from 'cc';
 import Singleton from '../base/Singleton';
 import { EntityTypeEnum, IActor, IActorMove, IState } from '../common';
 import { JoyStickManager } from '../ui/JoyStickManager';
@@ -26,6 +27,7 @@ export default class DataManager extends Singleton {
     ],
   };
   joyStick: JoyStickManager | null = null;
+  textureMap = new Map<string, SpriteFrame[]>();
 
   applyInput(input: IActorMove) {
     const {

@@ -1,7 +1,7 @@
-import { _decorator, Component, instantiate, Node, Prefab, resources } from 'cc';
+import { _decorator, Component, instantiate, Node, Prefab, resources, SpriteFrame } from 'cc';
 import DataManager from '../global/DataManager';
 import { JoyStickManager } from '../ui/JoyStickManager';
-import { PrefabPathEnum } from '../enum';
+import { PrefabPathEnum, TexturePathEnum } from '../enum';
 import { ResourceManager } from '../global/ResourceManager';
 import { ActorManager } from '../entity/actor/ActorManager';
 import { EntityTypeEnum } from '../common';
@@ -30,9 +30,10 @@ export class BattleManager extends Component {
     this.shouldUpdate = true;
   }
 
-  update() {
+  update(dt: number) {
     if (this.shouldUpdate) {
       this.render();
+      this.tick(dt);
     }
   }
 
@@ -54,7 +55,30 @@ export class BattleManager extends Component {
         });
       waitingList.push(p);
     }
+
+    for (const key in TexturePathEnum) {
+      const p = ResourceManager.instance
+        .loadDir((TexturePathEnum as any)[key], SpriteFrame)
+        .then((value) => {
+          DataManager.instance.textureMap.set(key, value);
+        });
+      waitingList.push(p);
+    }
+
     await Promise.all(waitingList);
+  }
+
+  tick(dt: number) {
+    this.tickActors(dt);
+  }
+
+  tickActors(dt: number) {
+    for (const data of DataManager.instance.state.actors) {
+      let actorManager = this.actorMap.get(data.id);
+      if (actorManager) {
+        actorManager.tick(dt);
+      }
+    }
   }
 
   render() {

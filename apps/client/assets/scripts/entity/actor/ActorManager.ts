@@ -1,13 +1,21 @@
-import { _decorator, Component } from 'cc';
+import { _decorator } from 'cc';
 import DataManager from '../../global/DataManager';
 import { IActor, InputTypeEnum } from '../../common';
+import { EntityManager } from '../../base/EntityManager';
+import { ActorStateMachine } from './ActorStateMachine';
+import { EntityStateEnum } from '../../enum';
 const { ccclass } = _decorator;
 
 @ccclass('ActorManager')
-export class ActorManager extends Component {
-  init(data: IActor) {}
+export class ActorManager extends EntityManager {
+  init(data: IActor) {
+    this.fsm = this.addComponent(ActorStateMachine)!;
+    this.fsm.init(data.type);
 
-  update(dt: number) {
+    this.state = EntityStateEnum.Idle;
+  }
+
+  tick(dt: number) {
     if (DataManager.instance.joyStick?.input.length()) {
       const { x, y } = DataManager.instance.joyStick.input;
       DataManager.instance.applyInput({
@@ -16,10 +24,15 @@ export class ActorManager extends Component {
         direction: { x, y },
         dt: dt,
       });
+      this.state = EntityStateEnum.Run;
+    } else {
+      this.state = EntityStateEnum.Idle;
     }
   }
 
   render(data: IActor) {
-    this.node.setPosition(data.position.x, data.position.y);
+    const { direction, position } = data;
+    this.node.setPosition(position.x, position.y);
+    this.node.setScale(direction.x < 0 ? -1 : 1, 1, 1);
   }
 }
