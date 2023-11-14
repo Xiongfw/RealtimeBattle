@@ -10,6 +10,7 @@ export interface IActor {
   position: IVec2;
   direction: IVec2;
   type: EntityTypeEnum;
+  weaponType: EntityTypeEnum;
 }
 
 export interface IState {

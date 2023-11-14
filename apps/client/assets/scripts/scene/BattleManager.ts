@@ -12,7 +12,6 @@ export class BattleManager extends Component {
   private stage!: Node;
   private ui!: Node;
   private shouldUpdate = false;
-  private prefabMap = new Map<string, Prefab>();
   private actorMap = new Map<number, ActorManager>();
 
   onLoad() {
@@ -38,7 +37,7 @@ export class BattleManager extends Component {
   }
 
   initMap() {
-    const prefab = this.prefabMap.get(EntityTypeEnum.Map);
+    const prefab = DataManager.instance.prefabMap.get(EntityTypeEnum.Map);
     if (prefab) {
       const node = instantiate(prefab);
       node.setParent(this.stage);
@@ -51,7 +50,7 @@ export class BattleManager extends Component {
       const p = ResourceManager.instance
         .loadRes((PrefabPathEnum as any)[key], Prefab)
         .then((value) => {
-          this.prefabMap.set(key, value);
+          DataManager.instance.prefabMap.set(key, value);
         });
       waitingList.push(p);
     }
@@ -89,7 +88,7 @@ export class BattleManager extends Component {
     for (const data of DataManager.instance.state.actors) {
       let actorManager = this.actorMap.get(data.id);
       if (!actorManager) {
-        const prefab = this.prefabMap.get(data.type);
+        const prefab = DataManager.instance.prefabMap.get(data.type);
         if (!prefab) {
           return;
         }

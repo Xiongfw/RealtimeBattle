@@ -1,4 +1,4 @@
-import { SpriteFrame } from 'cc';
+import { Prefab, SpriteFrame } from 'cc';
 import Singleton from '../base/Singleton';
 import { EntityTypeEnum, IActor, IActorMove, IState } from '../common';
 import { JoyStickManager } from '../ui/JoyStickManager';
@@ -15,6 +15,7 @@ export default class DataManager extends Singleton {
       {
         id: 1,
         type: EntityTypeEnum.Actor1,
+        weaponType: EntityTypeEnum.Weapon1,
         position: {
           x: 0,
           y: 0,
@@ -28,6 +29,7 @@ export default class DataManager extends Singleton {
   };
   joyStick: JoyStickManager | null = null;
   textureMap = new Map<string, SpriteFrame[]>();
+  prefabMap = new Map<string, Prefab>();
 
   applyInput(input: IActorMove) {
     const {
