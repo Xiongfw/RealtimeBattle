@@ -1,11 +1,17 @@
-import { Node, Prefab, SpriteFrame } from 'cc';
+import { Node, Prefab, SpriteFrame, view } from 'cc';
 import Singleton from '../base/Singleton';
 import { EntityTypeEnum, IBullet, IClientInput, IState, InputTypeEnum } from '../common';
 import { JoyStickManager } from '../ui/JoyStickManager';
 import { ActorManager } from '../entity/actor/ActorManager';
 import { BulletManager } from '../entity/bullet/BulletManager';
 
-export const ACTOR_SPEED = 100;
+// 人物移动速度
+const ACTOR_SPEED = 100;
+// 子弹飞行速度
+const BULLET_SPEED = 600;
+
+const SCREEN_WIDTH = view.getVisibleSize().width;
+const SCREEN_HEIGHT = view.getVisibleSize().height;
 
 export default class DataManager extends Singleton {
   static get instance() {
@@ -68,6 +74,26 @@ export default class DataManager extends Singleton {
           type: this.actorMap.get(owner)!.bulletType,
         };
         this.state.bullets.push(bullet);
+        break;
+      }
+      case InputTypeEnum.TimePast: {
+        const { dt } = input;
+        const { bullets } = this.state;
+
+        for (let i = 0; i < bullets.length; i++) {
+          const bullet = bullets[i];
+          if (
+            Math.abs(bullet.position.x) > SCREEN_WIDTH / 2 ||
+            Math.abs(bullet.position.y) > SCREEN_HEIGHT / 2
+          ) {
+            bullets.splice(i, 1);
+          }
+        }
+
+        for (const bullet of bullets) {
+          bullet.position.x += bullet.direction.x * dt * BULLET_SPEED;
+          bullet.position.y += bullet.direction.y * dt * BULLET_SPEED;
+        }
       }
     }
   }

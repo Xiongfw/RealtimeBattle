@@ -4,7 +4,7 @@ import { JoyStickManager } from '../ui/JoyStickManager';
 import { PrefabPathEnum, TexturePathEnum } from '../enum';
 import { ResourceManager } from '../global/ResourceManager';
 import { ActorManager } from '../entity/actor/ActorManager';
-import { EntityTypeEnum } from '../common';
+import { EntityTypeEnum, InputTypeEnum } from '../common';
 import { BulletManager } from '../entity/bullet/BulletManager';
 const { ccclass } = _decorator;
 
@@ -69,6 +69,11 @@ export class BattleManager extends Component {
 
   tick(dt: number) {
     this.tickActors(dt);
+
+    DataManager.instance.applyInput({
+      type: InputTypeEnum.TimePast,
+      dt,
+    });
   }
 
   tickActors(dt: number) {
