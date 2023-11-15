@@ -10,8 +10,11 @@ const { ccclass } = _decorator;
 @ccclass('ActorManager')
 export class ActorManager extends EntityManager {
   private weapon!: WeaponManager;
+  bulletType!: EntityTypeEnum;
 
   init(data: IActor) {
+    this.bulletType = data.bulletType;
+
     this.fsm = this.addComponent(ActorStateMachine)!;
     this.fsm.init(data.type);
 

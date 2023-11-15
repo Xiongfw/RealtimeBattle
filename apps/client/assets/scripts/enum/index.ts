@@ -1,4 +1,6 @@
-export enum EventEnum {}
+export enum EventEnum {
+  WeaponShoot = 'WeaponShoot',
+}
 
 export enum PrefabPathEnum {
   Actor1 = 'prefab/Actor',

@@ -12,10 +12,9 @@ export class BattleManager extends Component {
   private stage!: Node;
   private ui!: Node;
   private shouldUpdate = false;
-  private actorMap = new Map<number, ActorManager>();
 
   onLoad() {
-    this.stage = this.node.getChildByName('Stage')!;
+    DataManager.instance.stage = this.stage = this.node.getChildByName('Stage')!;
     this.ui = this.node.getChildByName('UI')!;
 
     DataManager.instance.joyStick = this.ui.getComponentInChildren(JoyStickManager);
@@ -73,7 +72,7 @@ export class BattleManager extends Component {
 
   tickActors(dt: number) {
     for (const data of DataManager.instance.state.actors) {
-      let actorManager = this.actorMap.get(data.id);
+      let actorManager = DataManager.instance.actorMap.get(data.id);
       if (actorManager) {
         actorManager.tick(dt);
       }
@@ -86,7 +85,7 @@ export class BattleManager extends Component {
 
   renderActors() {
     for (const data of DataManager.instance.state.actors) {
-      let actorManager = this.actorMap.get(data.id);
+      let actorManager = DataManager.instance.actorMap.get(data.id);
       if (!actorManager) {
         const prefab = DataManager.instance.prefabMap.get(data.type);
         if (!prefab) {
@@ -98,7 +97,7 @@ export class BattleManager extends Component {
         actorManager = node.addComponent(ActorManager);
         actorManager.init(data);
 
-        this.actorMap.set(data.id, actorManager);
+        DataManager.instance.actorMap.set(data.id, actorManager);
       } else {
         actorManager.render(data);
       }
