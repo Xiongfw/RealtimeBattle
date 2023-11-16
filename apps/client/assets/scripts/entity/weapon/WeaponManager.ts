@@ -50,5 +50,7 @@ export class WeaponManager extends EntityManager {
       position: pointStagePos,
       direction,
     });
+
+    this.state = EntityStateEnum.Attack;
   }
 }
