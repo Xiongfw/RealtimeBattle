@@ -1,4 +1,4 @@
-import { _decorator, instantiate, toDegree, toRadian } from 'cc';
+import { ProgressBar, _decorator, instantiate, toDegree } from 'cc';
 import DataManager from '../../global/DataManager';
 import { EntityTypeEnum, IActor, InputTypeEnum } from '../../common';
 import { EntityManager } from '../../base/EntityManager';
@@ -9,10 +9,15 @@ const { ccclass } = _decorator;
 
 @ccclass('ActorManager')
 export class ActorManager extends EntityManager {
+  private hp!: ProgressBar;
   private weapon!: WeaponManager;
   bulletType!: EntityTypeEnum;
+  id: number = -1;
 
   init(data: IActor) {
+    this.hp = this.getComponentInChildren(ProgressBar)!;
+
+    this.id = data.id;
     this.bulletType = data.bulletType;
 
     this.fsm = this.addComponent(ActorStateMachine)!;
@@ -32,10 +37,13 @@ export class ActorManager extends EntityManager {
   }
 
   tick(dt: number) {
+    if (this.id !== DataManager.instance.myPlayerId) {
+      return;
+    }
     if (DataManager.instance.joyStick?.input.length()) {
       const { x, y } = DataManager.instance.joyStick.input;
       DataManager.instance.applyInput({
-        id: 1,
+        id: this.id,
         type: InputTypeEnum.ActorMove,
         direction: { x, y },
         dt: dt,
@@ -57,5 +65,8 @@ export class ActorManager extends EntityManager {
     const rad = Math.asin(direction.y / side);
 
     this.weapon.node.setRotationFromEuler(0, 0, toDegree(rad));
+
+    this.hp.progress = data.hp / this.hp.totalLength;
+    this.hp.node.setScale(direction.x < 0 ? -1 : 1, 1, 1);
   }
 }

@@ -34,6 +34,9 @@ export class WeaponManager extends EntityManager {
   }
 
   handleWeaponShoot() {
+    if (this.owner !== DataManager.instance.myPlayerId) {
+      return;
+    }
     const pointWorldPos = this.point.getWorldPosition();
     const pointStagePos = DataManager.instance.stage
       .getComponent(UITransform)!

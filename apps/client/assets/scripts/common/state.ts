@@ -12,6 +12,7 @@ export interface IActor {
   type: EntityTypeEnum;
   weaponType: EntityTypeEnum;
   bulletType: EntityTypeEnum;
+  hp: number;
 }
 
 export interface IBullet {
