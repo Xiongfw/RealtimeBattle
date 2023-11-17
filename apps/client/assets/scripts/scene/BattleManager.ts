@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Node, Prefab, resources, SpriteFrame } from 'cc';
+import { _decorator, assert, Component, instantiate, Node, Prefab, SpriteFrame } from 'cc';
 import DataManager from '../global/DataManager';
 import { JoyStickManager } from '../ui/JoyStickManager';
 import { PrefabPathEnum, TexturePathEnum } from '../enum';
@@ -6,6 +6,7 @@ import { ResourceManager } from '../global/ResourceManager';
 import { ActorManager } from '../entity/actor/ActorManager';
 import { EntityTypeEnum, InputTypeEnum } from '../common';
 import { BulletManager } from '../entity/bullet/BulletManager';
+import { ObjectPoolManager } from '../global/ObjectPoolManager';
 const { ccclass } = _decorator;
 
 @ccclass('BattleManager')
@@ -94,14 +95,11 @@ export class BattleManager extends Component {
     for (const data of DataManager.instance.state.bullets) {
       let bulletManager = DataManager.instance.bulletMap.get(data.id);
       if (!bulletManager) {
-        const prefab = DataManager.instance.prefabMap.get(data.type);
-        if (!prefab) {
+        const bullet = ObjectPoolManager.instance.get(data.type);
+        if (!bullet) {
           return;
         }
-        const node = instantiate(prefab);
-        node.setParent(this.stage);
-
-        bulletManager = node.addComponent(BulletManager);
+        bulletManager = bullet.getComponent(BulletManager) || bullet.addComponent(BulletManager);
         bulletManager.init(data);
 
         DataManager.instance.bulletMap.set(data.id, bulletManager);

@@ -1,9 +1,10 @@
-import { _decorator, Component, instantiate, toDegree, Vec2 } from 'cc';
+import { _decorator, Component, toDegree, Vec2 } from 'cc';
 import { EntityTypeEnum, IBullet, IVec2 } from '../../common';
 import DataManager from '../../global/DataManager';
 import EventManager from '../../global/EventManager';
 import { EventEnum } from '../../enum';
 import { ExplosionManager } from '../explosion/ExplosionManager';
+import { ObjectPoolManager } from '../../global/ObjectPoolManager';
 const { ccclass } = _decorator;
 
 @ccclass('BulletManager')
@@ -28,16 +29,15 @@ export class BulletManager extends Component {
     if (this.id !== id) {
       return;
     }
-    const prefab = DataManager.instance.prefabMap.get(EntityTypeEnum.Explosion);
-    if (prefab) {
-      const explosion = instantiate(prefab);
-      DataManager.instance.stage.addChild(explosion);
-
-      const explosionMgr = explosion.addComponent(ExplosionManager);
+    const explosion = ObjectPoolManager.instance.get(EntityTypeEnum.Explosion);
+    if (explosion) {
+      const explosionMgr =
+        explosion.getComponent(ExplosionManager) || explosion.addComponent(ExplosionManager);
       explosionMgr.init(EntityTypeEnum.Explosion, { x, y });
 
       DataManager.instance.bulletMap.delete(this.id);
-      this.node.destroy();
+      EventManager.instance.off(EventEnum.ExplosionBorn, this.handleExplosionBorn, this);
+      ObjectPoolManager.instance.put(this.node);
     }
   }
 
