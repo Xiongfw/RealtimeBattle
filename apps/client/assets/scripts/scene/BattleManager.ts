@@ -1,12 +1,14 @@
 import { _decorator, assert, Component, instantiate, Node, Prefab, SpriteFrame } from 'cc';
 import DataManager from '../global/DataManager';
 import { JoyStickManager } from '../ui/JoyStickManager';
-import { PrefabPathEnum, TexturePathEnum } from '../enum';
+import { EventEnum, PrefabPathEnum, TexturePathEnum } from '../enum';
 import { ResourceManager } from '../global/ResourceManager';
 import { ActorManager } from '../entity/actor/ActorManager';
-import { EntityTypeEnum, InputTypeEnum } from '../common';
+import { ApiMsgEnum, EntityTypeEnum, IClientInput, InputTypeEnum } from '../common';
 import { BulletManager } from '../entity/bullet/BulletManager';
 import { ObjectPoolManager } from '../global/ObjectPoolManager';
+import { NetworkManager } from '../global/NetworkManager';
+import EventManager from '../global/EventManager';
 const { ccclass } = _decorator;
 
 @ccclass('BattleManager')
@@ -15,25 +17,39 @@ export class BattleManager extends Component {
   private ui!: Node;
   private shouldUpdate = false;
 
-  onLoad() {
+  async start() {
     DataManager.instance.stage = this.stage = this.node.getChildByName('Stage')!;
-    this.ui = this.node.getChildByName('UI')!;
+    this.stage.destroyAllChildren();
 
+    this.ui = this.node.getChildByName('UI')!;
     DataManager.instance.joyStick = this.ui.getComponentInChildren(JoyStickManager);
 
-    this.stage.destroyAllChildren();
+    await Promise.all([this.connectServer(), this.loadRes()]);
+
+    this.initMap();
+    EventManager.instance.on(EventEnum.ClientSync, this.handleClientSync, this);
+
+    NetworkManager.instance.listenMsg(ApiMsgEnum.MsgServerSync, this.handleServerSync, this);
+    this.shouldUpdate = true;
   }
 
-  async start() {
-    await this.loadRes();
-    this.initMap();
-    this.shouldUpdate = true;
+  onDestroy() {
+    EventManager.instance.off(EventEnum.ClientSync, this.handleClientSync, this);
+    NetworkManager.instance.unlistenMsg(ApiMsgEnum.MsgServerSync, this.handleServerSync, this);
   }
 
   update(dt: number) {
     if (this.shouldUpdate) {
       this.render();
       this.tick(dt);
+    }
+  }
+
+  async connectServer() {
+    if (!(await NetworkManager.instance.connect().catch(() => false))) {
+      // 简单重试
+      await new Promise((rs) => setTimeout(rs, 1000));
+      await this.connectServer();
     }
   }
 
@@ -127,6 +143,20 @@ export class BattleManager extends Component {
       } else {
         actorManager.render(data);
       }
+    }
+  }
+
+  handleClientSync(input: IClientInput) {
+    const msg = {
+      input,
+      frameId: DataManager.instance.frameId++,
+    };
+    NetworkManager.instance.sendMsg(ApiMsgEnum.MsgClientSync, msg);
+  }
+
+  handleServerSync({ inputs }: any) {
+    for (const input of inputs) {
+      DataManager.instance.applyInput(input);
     }
   }
 }

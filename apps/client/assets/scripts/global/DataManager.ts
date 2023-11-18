@@ -69,6 +69,8 @@ export default class DataManager extends Singleton {
   actorMap = new Map<number, ActorManager>();
   bulletMap = new Map<number, BulletManager>();
   myPlayerId = 1;
+  // 标识每一个 input
+  frameId = 1;
 
   applyInput(input: IClientInput) {
     switch (input.type) {

@@ -1,6 +1,7 @@
 export enum EventEnum {
   WeaponShoot = 'WeaponShoot',
   ExplosionBorn = 'ExplosionBorn',
+  ClientSync = 'ClientSync',
 }
 
 export enum PrefabPathEnum {

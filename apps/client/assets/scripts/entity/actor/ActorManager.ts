@@ -3,8 +3,9 @@ import DataManager from '../../global/DataManager';
 import { EntityTypeEnum, IActor, InputTypeEnum } from '../../common';
 import { EntityManager } from '../../base/EntityManager';
 import { ActorStateMachine } from './ActorStateMachine';
-import { EntityStateEnum } from '../../enum';
+import { EntityStateEnum, EventEnum } from '../../enum';
 import { WeaponManager } from '../weapon/WeaponManager';
+import EventManager from '../../global/EventManager';
 const { ccclass } = _decorator;
 
 @ccclass('ActorManager')
@@ -42,7 +43,7 @@ export class ActorManager extends EntityManager {
     }
     if (DataManager.instance.joyStick?.input.length()) {
       const { x, y } = DataManager.instance.joyStick.input;
-      DataManager.instance.applyInput({
+      EventManager.instance.emit(EventEnum.ClientSync, {
         id: this.id,
         type: InputTypeEnum.ActorMove,
         direction: { x, y },

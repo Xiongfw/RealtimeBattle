@@ -13,3 +13,8 @@ export enum EntityTypeEnum {
   Bullet2 = 'Bullet2',
   Explosion = 'Explosion',
 }
+
+export enum ApiMsgEnum {
+  MsgClientSync = 'MsgClientSync',
+  MsgServerSync = 'MsgServerSync',
+}
