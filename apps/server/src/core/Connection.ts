@@ -11,10 +11,25 @@ export class Connection extends EventEmitter {
       try {
         const json = JSON.parse(rawData.toString());
         const { name, data } = json;
-        this.emit(name, data);
+        // 区分是 api 请求 还是 msg 消息
+        if (this.server.apiMap.has(name)) {
+          const cb = this.server.apiMap.get(name);
+          const res = cb(this, data);
+          this.sendMsg(name, res);
+        } else {
+          this.emit(name, data);
+        }
       } catch (e) {
         console.error(e);
       }
     });
+  }
+
+  sendMsg(name: string, data?: any) {
+    const msg = {
+      name,
+      data,
+    };
+    this.ws.send(JSON.stringify(msg));
   }
 }

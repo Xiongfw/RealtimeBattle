@@ -6,10 +6,14 @@ type GameServerOptions = {
   post: number;
 };
 
+type SetApiCallback = (connection: Connection, data?: any) => any;
+
 export class GameServer {
   private port: number;
   private wss: WebSocketServer;
   private connections = new Set<Connection>();
+
+  apiMap = new Map<string, SetApiCallback>();
 
   constructor(options: GameServerOptions) {
     this.port = options.post;
@@ -40,5 +44,9 @@ export class GameServer {
         });
       });
     });
+  }
+
+  setApi(name: ApiMsgEnum, cb: SetApiCallback) {
+    this.apiMap.set(name, cb);
   }
 }
