@@ -4,5 +4,6 @@
   "creator": {
     "version": "3.8.0"
   },
-  "description": "Node.js、实时对战、IO、帧同步"
+  "description": "Node.js、实时对战、IO、帧同步",
+  "version": "3.8.0"
 }

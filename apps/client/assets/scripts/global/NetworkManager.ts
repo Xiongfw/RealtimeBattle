@@ -5,6 +5,12 @@ interface IItem {
   ctx?: unknown;
 }
 
+type CallApiRet = {
+  success: Boolean;
+  data?: any;
+  error?: unknown;
+};
+
 export class NetworkManager extends Singleton {
   static get instance() {
     return super.getInstance<NetworkManager>();
@@ -13,17 +19,26 @@ export class NetworkManager extends Singleton {
   private post = 9876;
   private map: Map<string, Array<IItem>> = new Map();
 
+  isConnected = false;
+
   connect() {
     return new Promise((resolve, reject) => {
+      if (this.isConnected) {
+        resolve(true);
+        return;
+      }
       this.ws = new WebSocket(`ws://192.168.71.2:${this.post}`);
       this.ws.onopen = () => {
+        this.isConnected = true;
         resolve(true);
       };
       this.ws.onclose = () => {
+        this.isConnected = false;
         reject(false);
       };
       this.ws.onerror = (e) => {
         console.error(e);
+        this.isConnected = false;
         reject(false);
       };
       this.ws.onmessage = (e) => {
@@ -42,7 +57,30 @@ export class NetworkManager extends Singleton {
     });
   }
 
-  sendMsg(name: string, data: any) {
+  callApi(name: string, data?: any) {
+    return new Promise<CallApiRet>((resolve) => {
+      try {
+        // 设置超时返回
+        const timer = setTimeout(() => {
+          resolve({ success: false, error: new Error('Timeout!') });
+          this.unlistenMsg(name, cb);
+        }, 5000);
+
+        const cb = (res: any) => {
+          resolve({ success: true, data: res });
+          this.unlistenMsg(name, cb);
+          clearTimeout(timer);
+        };
+
+        this.listenMsg(name, cb);
+        this.sendMsg(name, data);
+      } catch (error) {
+        resolve({ success: false, error });
+      }
+    });
+  }
+
+  sendMsg(name: string, data?: any) {
     const msg = {
       name,
       data,
@@ -58,7 +96,7 @@ export class NetworkManager extends Singleton {
     }
   }
 
-  unlistenMsg(name: string, cb: Function, ctx: unknown) {
+  unlistenMsg(name: string, cb: Function, ctx?: unknown) {
     if (this.map.has(name)) {
       const index = this.map.get(name)!.findIndex((i) => cb === i.cb && i.ctx === ctx);
       index > -1 && this.map.get(name)!.splice(index, 1);
