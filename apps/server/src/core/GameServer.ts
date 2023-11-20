@@ -1,4 +1,4 @@
-import { WebSocketServer } from 'ws';
+import { EventEmitter, WebSocketServer } from 'ws';
 import { Connection } from './index';
 import { ApiMsgEnum } from '../common';
 
@@ -8,14 +8,15 @@ type GameServerOptions = {
 
 type SetApiCallback = (connection: Connection, data?: any) => any;
 
-export class GameServer {
-  private port: number;
+export class GameServer extends EventEmitter {
   private wss: WebSocketServer;
-  private connections = new Set<Connection>();
+  readonly port: number;
+  readonly connections = new Set<Connection>();
 
   apiMap = new Map<string, SetApiCallback>();
 
   constructor(options: GameServerOptions) {
+    super();
     this.port = options.post;
   }
 
@@ -36,11 +37,11 @@ export class GameServer {
       this.wss.on('connection', (ws) => {
         const connection = new Connection(this, ws);
         this.connections.add(connection);
-        console.log('join', this.connections.size);
+        this.emit('connection', connection);
 
         connection.on('close', () => {
           this.connections.delete(connection);
-          console.log('close', this.connections.size);
+          this.emit('disconnection', connection);
         });
       });
     });
