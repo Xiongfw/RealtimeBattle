@@ -1,7 +1,15 @@
 import { WebSocket, EventEmitter } from 'ws';
 import { GameServer } from './GameServer';
+import { MsgModel } from '../common';
+
+interface IItem {
+  cb: Function;
+  ctx?: unknown;
+}
 
 export class Connection extends EventEmitter {
+  private map: Map<string, Array<IItem>> = new Map();
+
   constructor(private server: GameServer, private ws: WebSocket) {
     super();
     this.ws.on('close', () => {
@@ -25,11 +33,26 @@ export class Connection extends EventEmitter {
     });
   }
 
-  sendMsg(name: string, data?: any) {
+  sendMsg<T extends keyof MsgModel>(name: T, data: MsgModel[T]) {
     const msg = {
       name,
       data,
     };
     this.ws.send(JSON.stringify(msg));
+  }
+
+  listenMsg<T extends keyof MsgModel>(name: T, cb: (data: MsgModel[T]) => void, ctx?: unknown) {
+    if (this.map.has(name)) {
+      this.map.get(name)!.push({ cb, ctx });
+    } else {
+      this.map.set(name, [{ cb, ctx }]);
+    }
+  }
+
+  unlistenMsg<T extends keyof MsgModel>(name: T, cb: (data: MsgModel[T]) => void, ctx?: unknown) {
+    if (this.map.has(name)) {
+      const index = this.map.get(name)!.findIndex((i) => cb === i.cb && i.ctx === ctx);
+      index > -1 && this.map.get(name)!.splice(index, 1);
+    }
   }
 }

@@ -1,19 +1,19 @@
 import { EventEmitter, WebSocketServer } from 'ws';
 import { Connection } from './index';
-import { ApiMsgEnum } from '../common';
+import { ApiModel } from '../common';
 
 type GameServerOptions = {
   post: number;
 };
 
-type SetApiCallback = (connection: Connection, data?: any) => any;
+// type SetApiCallback = ;
 
 export class GameServer extends EventEmitter {
   private wss: WebSocketServer;
   readonly port: number;
   readonly connections = new Set<Connection>();
 
-  apiMap = new Map<string, SetApiCallback>();
+  apiMap = new Map<string, Function>();
 
   constructor(options: GameServerOptions) {
     super();
@@ -47,7 +47,10 @@ export class GameServer extends EventEmitter {
     });
   }
 
-  setApi(name: ApiMsgEnum, cb: SetApiCallback) {
+  setApi<T extends keyof ApiModel>(
+    name: T,
+    cb: (connection: Connection, data: ApiModel[T]['req']) => ApiModel[T]['res']
+  ) {
     this.apiMap.set(name, cb);
   }
 }

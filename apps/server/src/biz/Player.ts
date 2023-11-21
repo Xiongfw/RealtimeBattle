@@ -3,7 +3,7 @@ import { Connection } from '../core';
 export class Player {
   id: number;
   // room id
-  rid: number;
+  rid?: number;
   nickname: string;
   connection: Connection;
 
@@ -11,16 +11,5 @@ export class Player {
     this.id = id;
     this.nickname = nickname;
     this.connection = connection;
-  }
-
-  /**
-   * 视图层数据
-   */
-  private toJSON() {
-    return {
-      id: this.id,
-      nickname: this.nickname,
-      rid: this.rid,
-    };
   }
 }

@@ -28,6 +28,10 @@ server.setApi(ApiMsgEnum.ApiPlayerJoin, (connection, data) => {
   });
 
   return {
-    player,
+    player: {
+      id: player.id,
+      rid: player.rid,
+      nickname: player.nickname,
+    },
   };
 });
