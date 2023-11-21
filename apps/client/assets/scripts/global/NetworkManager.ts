@@ -1,15 +1,10 @@
 import Singleton from '../base/Singleton';
+import { ApiModel, MsgModel } from '../common';
 
 interface IItem {
   cb: Function;
   ctx?: unknown;
 }
-
-type CallApiRet = {
-  success: Boolean;
-  data?: any;
-  error?: unknown;
-};
 
 export class NetworkManager extends Singleton {
   static get instance() {
@@ -57,30 +52,30 @@ export class NetworkManager extends Singleton {
     });
   }
 
-  callApi(name: string, data?: any) {
-    return new Promise<CallApiRet>((resolve) => {
+  callApi<T extends keyof ApiModel>(name: T, data: ApiModel[T]['req']) {
+    return new Promise<ApiModel[T]['res']>((resolve, reject) => {
       try {
         // 设置超时返回
         const timer = setTimeout(() => {
-          resolve({ success: false, error: new Error('Timeout!') });
-          this.unlistenMsg(name, cb);
+          reject(new Error('Timeout!'));
+          this.unlistenMsg(name as any, cb);
         }, 5000);
 
         const cb = (res: any) => {
-          resolve({ success: true, data: res });
-          this.unlistenMsg(name, cb);
+          resolve(res);
+          this.unlistenMsg(name as any, cb);
           clearTimeout(timer);
         };
 
-        this.listenMsg(name, cb);
-        this.sendMsg(name, data);
+        this.listenMsg(name as any, cb);
+        this.sendMsg(name as any, data);
       } catch (error) {
-        resolve({ success: false, error });
+        reject(error);
       }
     });
   }
 
-  sendMsg(name: string, data?: any) {
+  sendMsg<T extends keyof MsgModel>(name: T, data: MsgModel[T]) {
     const msg = {
       name,
       data,
@@ -88,7 +83,7 @@ export class NetworkManager extends Singleton {
     this.ws.send(JSON.stringify(msg));
   }
 
-  listenMsg(name: string, cb: Function, ctx?: unknown) {
+  listenMsg<T extends keyof MsgModel>(name: T, cb: (data: MsgModel[T]) => void, ctx?: unknown) {
     if (this.map.has(name)) {
       this.map.get(name)!.push({ cb, ctx });
     } else {
@@ -96,7 +91,7 @@ export class NetworkManager extends Singleton {
     }
   }
 
-  unlistenMsg(name: string, cb: Function, ctx?: unknown) {
+  unlistenMsg<T extends keyof MsgModel>(name: T, cb: (data: MsgModel[T]) => void, ctx?: unknown) {
     if (this.map.has(name)) {
       const index = this.map.get(name)!.findIndex((i) => cb === i.cb && i.ctx === ctx);
       index > -1 && this.map.get(name)!.splice(index, 1);

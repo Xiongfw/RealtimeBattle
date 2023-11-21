@@ -24,16 +24,9 @@ export class LoginManager extends Component {
       console.log('请输入昵称');
       return;
     }
-    const { success, data, error } = await NetworkManager.instance.callApi(
-      ApiMsgEnum.ApiPlayerJoin,
-      {
-        nickname: this.nickname.string,
-      }
-    );
-    if (!success) {
-      console.error(error);
-      return;
-    }
+    const data = await NetworkManager.instance.callApi(ApiMsgEnum.ApiPlayerJoin, {
+      nickname: this.nickname.string,
+    });
     DataManager.instance.myPlayerId = data.player.id;
     director.loadScene(SceneEnum.Battle);
   }
