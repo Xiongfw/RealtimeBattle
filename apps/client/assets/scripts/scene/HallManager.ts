@@ -34,4 +34,8 @@ export class HallManager extends Component {
       playerMgr.init(player);
     }
   }
+
+  async handleCreateRoom() {
+    const data = await NetworkManager.instance.callApi(ApiMsgEnum.ApiRoomCreate, {});
+  }
 }

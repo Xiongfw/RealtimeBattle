@@ -7,6 +7,11 @@ export interface IPlayer {
   nickname: string;
 }
 
+export interface IRoom {
+  id: number;
+  players: IPlayer[];
+}
+
 export interface ApiModel {
   [ApiMsgEnum.ApiPlayerJoin]: {
     req: {
@@ -20,6 +25,12 @@ export interface ApiModel {
     req: {};
     res: {
       list: IPlayer[];
+    };
+  };
+  [ApiMsgEnum.ApiRoomCreate]: {
+    req: {};
+    res: {
+      room: IRoom;
     };
   };
 }
