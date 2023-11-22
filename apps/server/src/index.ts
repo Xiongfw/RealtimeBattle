@@ -29,6 +29,9 @@ server.setApi(ApiMsgEnum.ApiRoomCreate, (connection, data) => {
   }
   const newRoom = RoomManager.instance.createRoom();
   const room = RoomManager.instance.joinRoom(newRoom.id, playerId);
+
+  PlayerManager.instance.syncPlayers();
+  RoomManager.instance.syncRooms();
   return {
     room: room.toJSON(),
   };
@@ -55,5 +58,11 @@ server.setApi(ApiMsgEnum.ApiPlayerJoin, (connection, data) => {
 server.setApi(ApiMsgEnum.ApiPlayerList, (connection, data) => {
   return {
     list: [...PlayerManager.instance.players],
+  };
+});
+
+server.setApi(ApiMsgEnum.ApiRoomList, (connection, data) => {
+  return {
+    list: [...RoomManager.instance.rooms].map((i) => i.toJSON()),
   };
 });

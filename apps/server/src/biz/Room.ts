@@ -1,9 +1,10 @@
 import { IPlayer, IRoom } from '../common';
+import { Player } from './Player';
 import { PlayerManager } from './PlayerManager';
 
 export class Room {
   id: number;
-  players = new Set<IPlayer>();
+  players = new Set<Player>();
 
   constructor(rid: number) {
     this.id = rid;

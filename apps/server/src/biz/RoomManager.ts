@@ -1,4 +1,6 @@
 import Singleton from '../base/Singleton';
+import { ApiMsgEnum } from '../common';
+import { PlayerManager } from './PlayerManager';
 import { Room } from './Room';
 
 export class RoomManager extends Singleton {
@@ -36,6 +38,14 @@ export class RoomManager extends Singleton {
     if (room) {
       room.join(uid);
       return room;
+    }
+  }
+
+  syncRooms() {
+    for (const player of PlayerManager.instance.players) {
+      player.connection.sendMsg(ApiMsgEnum.MsgRoomList, {
+        list: [...this.rooms].map((i) => i.toJSON()),
+      });
     }
   }
 }
