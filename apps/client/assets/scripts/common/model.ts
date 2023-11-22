@@ -33,6 +33,12 @@ export interface ApiModel {
       room: IRoom;
     };
   };
+  [ApiMsgEnum.ApiRoomList]: {
+    req: {};
+    res: {
+      list: IRoom[];
+    };
+  };
 }
 
 export interface MsgModel {
@@ -46,5 +52,8 @@ export interface MsgModel {
   };
   [ApiMsgEnum.MsgPlayerList]: {
     list: IPlayer[];
+  };
+  [ApiMsgEnum.MsgRoomList]: {
+    list: IRoom[];
   };
 }
