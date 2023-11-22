@@ -1,6 +1,7 @@
+import { IPlayer } from '../common';
 import { Connection } from '../core';
 
-export class Player {
+export class Player implements IPlayer {
   id: number;
   // room id
   rid?: number;
@@ -11,5 +12,13 @@ export class Player {
     this.id = id;
     this.nickname = nickname;
     this.connection = connection;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      rid: this.rid,
+      nickname: this.nickname,
+    };
   }
 }

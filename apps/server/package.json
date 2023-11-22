@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node ./src/index -e ts"
+    "dev": "nodemon --exec ts-node ./src/index -e ts",
+    "sync": "node ./scripts/sync.js"
   },
   "keywords": [],
   "author": "",

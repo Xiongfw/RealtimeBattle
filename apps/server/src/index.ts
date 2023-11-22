@@ -23,15 +23,21 @@ server
 server.setApi(ApiMsgEnum.ApiPlayerJoin, (connection, data) => {
   const { nickname } = data;
   const player = PlayerManager.instance.createPlayer({ nickname, connection });
+
+  PlayerManager.instance.syncPlayers();
+
   player.connection.on('close', () => {
     PlayerManager.instance.removePlayer(player.id);
+    PlayerManager.instance.syncPlayers();
   });
 
   return {
-    player: {
-      id: player.id,
-      rid: player.rid,
-      nickname: player.nickname,
-    },
+    player,
+  };
+});
+
+server.setApi(ApiMsgEnum.ApiPlayerList, (connection, data) => {
+  return {
+    list: [...PlayerManager.instance.players],
   };
 });

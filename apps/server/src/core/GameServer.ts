@@ -6,8 +6,6 @@ type GameServerOptions = {
   post: number;
 };
 
-// type SetApiCallback = ;
-
 export class GameServer extends EventEmitter {
   private wss: WebSocketServer;
   readonly port: number;
