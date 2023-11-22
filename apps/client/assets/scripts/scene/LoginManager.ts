@@ -11,6 +11,7 @@ export class LoginManager extends Component {
   private nickname!: EditBox;
 
   start() {
+    director.preloadScene(SceneEnum.Hall);
     director.preloadScene(SceneEnum.Battle);
     NetworkManager.instance.connect();
   }
@@ -28,6 +29,6 @@ export class LoginManager extends Component {
       nickname: this.nickname.string,
     });
     DataManager.instance.myPlayerId = data.player.id;
-    director.loadScene(SceneEnum.Battle);
+    director.loadScene(SceneEnum.Hall);
   }
 }
