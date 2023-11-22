@@ -9,6 +9,7 @@ interface IItem {
 
 export class Connection extends EventEmitter {
   private map: Map<string, Array<IItem>> = new Map();
+  extInfo: Record<string, any> = {};
 
   constructor(private server: GameServer, private ws: WebSocket) {
     super();
@@ -25,7 +26,11 @@ export class Connection extends EventEmitter {
           const res = cb(this, data);
           this.sendMsg(name, res);
         } else {
-          this.emit(name, data);
+          if (this.map.has(name)) {
+            this.map.get(name)!.forEach(({ cb, ctx }) => {
+              cb.apply(ctx, data);
+            });
+          }
         }
       } catch (e) {
         console.error(e);
