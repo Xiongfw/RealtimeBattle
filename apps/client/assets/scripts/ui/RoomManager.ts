@@ -13,11 +13,11 @@ export class RoomManager extends Component {
     const label = this.getComponent(Label)!;
     label.string = `房间id:${id} 玩家数量:${players.length}`;
 
-    this.node.on(Node.EventType.MOUSE_UP, this.handleClick, this);
+    this.node.on(Node.EventType.TOUCH_END, this.handleClick, this);
   }
 
   protected onDestroy(): void {
-    this.node.off(Node.EventType.MOUSE_UP, this.handleClick, this);
+    this.node.off(Node.EventType.TOUCH_END, this.handleClick, this);
   }
 
   handleClick() {

@@ -1,8 +1,9 @@
-import { _decorator, Component, instantiate, Node, Prefab } from 'cc';
+import { _decorator, Component, director, instantiate, Node, Prefab } from 'cc';
 import { NetworkManager } from '../global/NetworkManager';
 import { ApiMsgEnum, MsgModel } from '../common';
 import { PlayerManager } from '../ui/PlayerManager';
 import DataManager from '../global/DataManager';
+import { SceneEnum } from '../enum';
 const { ccclass, property } = _decorator;
 
 @ccclass('RoomSceneManager')
@@ -31,5 +32,10 @@ export class RoomSceneManager extends Component {
       const playerMgr = node.addComponent(PlayerManager);
       playerMgr.init(player);
     }
+  }
+
+  async handleLeaveRoom() {
+    await NetworkManager.instance.callApi(ApiMsgEnum.ApiRoomLeave, {});
+    director.loadScene(SceneEnum.Hall);
   }
 }
