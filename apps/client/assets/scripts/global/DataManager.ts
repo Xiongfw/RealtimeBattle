@@ -1,6 +1,6 @@
 import { Node, Prefab, SpriteFrame, view } from 'cc';
 import Singleton from '../base/Singleton';
-import { EntityTypeEnum, IBullet, IClientInput, IState, InputTypeEnum } from '../common';
+import { EntityTypeEnum, IBullet, IClientInput, IRoom, IState, InputTypeEnum } from '../common';
 import { JoyStickManager } from '../ui/JoyStickManager';
 import { ActorManager } from '../entity/actor/ActorManager';
 import { BulletManager } from '../entity/bullet/BulletManager';
@@ -71,6 +71,7 @@ export default class DataManager extends Singleton {
   myPlayerId = 1;
   // 标识每一个 input
   frameId = 1;
+  room?: IRoom;
 
   applyInput(input: IClientInput) {
     switch (input.type) {

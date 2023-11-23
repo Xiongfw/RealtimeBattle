@@ -1,13 +1,26 @@
-import { _decorator, Component, Label } from 'cc';
+import { _decorator, Component, Label, Node } from 'cc';
 import { IRoom } from '../common';
+import EventManager from '../global/EventManager';
+import { EventEnum } from '../enum';
 const { ccclass } = _decorator;
 
 @ccclass('RoomManager')
 export class RoomManager extends Component {
-  private label!: Label;
+  id!: number;
 
   init({ id, players }: IRoom) {
-    this.label = this.getComponent(Label)!;
-    this.label.string = `房间id:${id} 玩家数量:${players.length}`;
+    this.id = id;
+    const label = this.getComponent(Label)!;
+    label.string = `房间id:${id} 玩家数量:${players.length}`;
+
+    this.node.on(Node.EventType.MOUSE_UP, this.handleClick, this);
+  }
+
+  protected onDestroy(): void {
+    this.node.off(Node.EventType.MOUSE_UP, this.handleClick, this);
+  }
+
+  handleClick() {
+    EventManager.instance.emit(EventEnum.RoomJoin, this.id);
   }
 }

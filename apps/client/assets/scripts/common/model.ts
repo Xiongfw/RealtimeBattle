@@ -39,6 +39,13 @@ export interface ApiModel {
       list: IRoom[];
     };
   };
+  // 加入房间
+  [ApiMsgEnum.ApiRoomJoin]: {
+    req: { rid: number };
+    res: {
+      room: IRoom;
+    };
+  };
 }
 
 export interface MsgModel {
@@ -55,5 +62,8 @@ export interface MsgModel {
   };
   [ApiMsgEnum.MsgRoomList]: {
     list: IRoom[];
+  };
+  [ApiMsgEnum.MsgRoomInfo]: {
+    room: IRoom;
   };
 }

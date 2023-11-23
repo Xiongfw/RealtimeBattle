@@ -2,6 +2,7 @@ export enum EventEnum {
   WeaponShoot = 'WeaponShoot',
   ExplosionBorn = 'ExplosionBorn',
   ClientSync = 'ClientSync',
+  RoomJoin = 'RoomJoin',
 }
 
 export enum PrefabPathEnum {
@@ -42,4 +43,5 @@ export enum SceneEnum {
   Login = 'Login',
   Battle = 'Battle',
   Hall = 'Hall',
+  Room = 'Room',
 }

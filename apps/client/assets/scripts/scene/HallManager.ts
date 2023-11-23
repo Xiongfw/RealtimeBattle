@@ -1,8 +1,11 @@
-import { _decorator, Component, instantiate, Node, Prefab } from 'cc';
+import { _decorator, Component, director, instantiate, Node, Prefab } from 'cc';
 import { NetworkManager } from '../global/NetworkManager';
 import { ApiModel, ApiMsgEnum } from '../common';
 import { PlayerManager } from '../ui/PlayerManager';
 import { RoomManager } from '../ui/RoomManager';
+import { EventEnum, SceneEnum } from '../enum';
+import DataManager from '../global/DataManager';
+import EventManager from '../global/EventManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('HallManager')
@@ -21,11 +24,21 @@ export class HallManager extends Component {
     this.getRoomList();
     NetworkManager.instance.listenMsg(ApiMsgEnum.MsgPlayerList, this.renderPlayers, this);
     NetworkManager.instance.listenMsg(ApiMsgEnum.MsgRoomList, this.renderRooms, this);
+
+    EventManager.instance.on(EventEnum.RoomJoin, this.handleRoomJoin, this);
   }
 
   protected onDestroy(): void {
     NetworkManager.instance.unlistenMsg(ApiMsgEnum.MsgPlayerList, this.renderPlayers, this);
     NetworkManager.instance.unlistenMsg(ApiMsgEnum.MsgRoomList, this.renderRooms, this);
+
+    EventManager.instance.off(EventEnum.RoomJoin, this.handleRoomJoin, this);
+  }
+
+  async handleRoomJoin(rid: number) {
+    const { room } = await NetworkManager.instance.callApi(ApiMsgEnum.ApiRoomJoin, { rid });
+    DataManager.instance.room = room;
+    director.loadScene(SceneEnum.Room);
   }
 
   async getPlayerList() {
@@ -59,6 +72,8 @@ export class HallManager extends Component {
   }
 
   async handleCreateRoom() {
-    const data = await NetworkManager.instance.callApi(ApiMsgEnum.ApiRoomCreate, {});
+    const { room } = await NetworkManager.instance.callApi(ApiMsgEnum.ApiRoomCreate, {});
+    DataManager.instance.room = room;
+    director.loadScene(SceneEnum.Room);
   }
 }
