@@ -76,9 +76,30 @@ server.setApi(ApiMsgEnum.ApiRoomJoin, (connection, data) => {
     throw new Error('房间不存在');
   }
 
-  room.syncRoomInfo();
+  PlayerManager.instance.syncPlayers();
+  RoomManager.instance.syncRoomInfo(room.id);
+  RoomManager.instance.syncRooms();
 
   return {
     room: room.toJSON(),
   };
+});
+
+server.setApi(ApiMsgEnum.ApiRoomLeave, (connection, data) => {
+  const { playerId } = connection.extInfo;
+  const player = PlayerManager.instance.idMapPlayer.get(playerId);
+  if (!player) {
+    throw new Error('玩家不存在');
+  }
+  if (!player.rid) {
+    throw new Error('玩家不在房间内');
+  }
+  const { rid, id } = player;
+  RoomManager.instance.leaveRoom(rid, id);
+
+  PlayerManager.instance.syncPlayers();
+  RoomManager.instance.syncRoomInfo(rid);
+  RoomManager.instance.syncRooms();
+
+  return {};
 });

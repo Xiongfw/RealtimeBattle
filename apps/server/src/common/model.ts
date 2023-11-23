@@ -46,6 +46,10 @@ export interface ApiModel {
       room: IRoom;
     };
   };
+  [ApiMsgEnum.ApiRoomLeave]: {
+    req: {};
+    res: {};
+  };
 }
 
 export interface MsgModel {

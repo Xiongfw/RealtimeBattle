@@ -25,6 +25,7 @@ export class RoomManager extends Singleton {
     if (room) {
       this.idMapRoom.delete(pid);
       this.rooms.delete(room);
+      room.close();
     }
   }
 
@@ -38,6 +39,20 @@ export class RoomManager extends Singleton {
     if (room) {
       room.join(uid);
       return room;
+    }
+  }
+
+  leaveRoom(rid: number, uid: number) {
+    const room = this.idMapRoom.get(rid);
+    if (room) {
+      room.leave(uid);
+    }
+  }
+
+  syncRoomInfo(rid: number) {
+    const room = this.idMapRoom.get(rid);
+    if (room) {
+      room.sync();
     }
   }
 
