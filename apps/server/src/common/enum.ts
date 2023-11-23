@@ -19,8 +19,11 @@ export enum ApiMsgEnum {
   MsgServerSync = 'MsgServerSync',
   MsgPlayerList = 'MsgPlayerList',
   MsgRoomList = 'MsgRoomList',
+  // 同步房间内的信息
+  MsgRoomInfo = 'MsgRoomInfo',
   ApiPlayerJoin = 'ApiPlayerJoin',
   ApiPlayerList = 'ApiPlayerList',
   ApiRoomList = 'ApiRoomList',
   ApiRoomCreate = 'ApiRoomCreate',
+  ApiRoomJoin = 'ApiRoomJoin',
 }

@@ -66,3 +66,19 @@ server.setApi(ApiMsgEnum.ApiRoomList, (connection, data) => {
     list: [...RoomManager.instance.rooms].map((i) => i.toJSON()),
   };
 });
+
+server.setApi(ApiMsgEnum.ApiRoomJoin, (connection, data) => {
+  const { playerId } = connection.extInfo;
+  const { rid } = data;
+
+  const room = RoomManager.instance.joinRoom(rid, playerId);
+  if (!room) {
+    throw new Error('房间不存在');
+  }
+
+  room.syncRoomInfo();
+
+  return {
+    room: room.toJSON(),
+  };
+});

@@ -1,4 +1,4 @@
-import { IPlayer, IRoom } from '../common';
+import { ApiMsgEnum, IPlayer, IRoom } from '../common';
 import { Player } from './Player';
 import { PlayerManager } from './PlayerManager';
 
@@ -15,6 +15,14 @@ export class Room {
     if (player) {
       player.rid = this.id;
       this.players.add(player);
+    }
+  }
+
+  syncRoomInfo() {
+    for (const player of this.players) {
+      player.connection.sendMsg(ApiMsgEnum.MsgRoomInfo, {
+        room: this.toJSON(),
+      });
     }
   }
 
