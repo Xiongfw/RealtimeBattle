@@ -8,8 +8,25 @@ const server = new GameServer({ post: 9876 });
 server.on('connection', () => {
   console.log('join', server.connections.size);
 });
-server.on('disconnection', () => {
+server.on('disconnection', (connection) => {
   console.log('exit', server.connections.size);
+
+  const { playerId } = connection.extInfo;
+
+  if (!playerId) {
+    return;
+  }
+
+  const player = PlayerManager.instance.idMapPlayer.get(playerId);
+  const { id, rid } = player;
+  if (rid) {
+    RoomManager.instance.leaveRoom(rid, id);
+    RoomManager.instance.syncRoomInfo(rid);
+    RoomManager.instance.syncRooms();
+  }
+  PlayerManager.instance.removePlayer(player.id);
+  PlayerManager.instance.syncPlayers();
+  delete connection.extInfo.playerId;
 });
 
 server
@@ -43,12 +60,6 @@ server.setApi(ApiMsgEnum.ApiPlayerJoin, (connection, data) => {
   connection.extInfo.playerId = player.id;
 
   PlayerManager.instance.syncPlayers();
-
-  player.connection.on('close', () => {
-    PlayerManager.instance.removePlayer(player.id);
-    PlayerManager.instance.syncPlayers();
-    delete connection.extInfo.playerId;
-  });
 
   return {
     player,
