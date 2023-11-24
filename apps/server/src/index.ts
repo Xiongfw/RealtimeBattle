@@ -114,3 +114,22 @@ server.setApi(ApiMsgEnum.ApiRoomLeave, (connection, data) => {
 
   return {};
 });
+
+server.setApi(ApiMsgEnum.ApiGameStart, (connection, data) => {
+  const { playerId } = connection.extInfo;
+  const player = PlayerManager.instance.idMapPlayer.get(playerId);
+  if (!player) {
+    throw new Error('玩家不存在');
+  }
+  if (!player.rid) {
+    throw new Error('玩家不在房间内');
+  }
+  const { rid, id } = player;
+  RoomManager.instance.startGame(rid);
+
+  PlayerManager.instance.syncPlayers();
+  RoomManager.instance.syncRoomInfo(rid);
+  RoomManager.instance.syncRooms();
+
+  return {};
+});

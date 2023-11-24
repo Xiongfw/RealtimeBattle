@@ -1,4 +1,4 @@
-import { ApiMsgEnum, IPlayer, IRoom } from '../common';
+import { ApiMsgEnum, EntityTypeEnum, IActor } from '../common';
 import { Player } from './Player';
 import { PlayerManager } from './PlayerManager';
 import { RoomManager } from './RoomManager';
@@ -40,6 +40,33 @@ export class Room {
         room: this.toJSON(),
       });
     }
+  }
+
+  start() {
+    const actors: IActor[] = [...this.players].map((p, i) => {
+      return {
+        id: p.id,
+        nickname: p.nickname,
+        type: EntityTypeEnum.Actor1,
+        weaponType: EntityTypeEnum.Weapon1,
+        bulletType: EntityTypeEnum.Bullet1,
+        hp: 100,
+        position: {
+          x: -150 + i * 300,
+          y: -150 + i * 300,
+        },
+        direction: {
+          x: -1,
+          y: 0,
+        },
+      };
+    });
+
+    this.players.forEach((i) =>
+      i.connection.sendMsg(ApiMsgEnum.MsgGameStart, {
+        actors,
+      })
+    );
   }
 
   toJSON() {

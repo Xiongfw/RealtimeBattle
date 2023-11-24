@@ -21,10 +21,12 @@ export enum ApiMsgEnum {
   MsgRoomList = 'MsgRoomList',
   // 同步房间内的信息
   MsgRoomInfo = 'MsgRoomInfo',
+  MsgGameStart = 'MsgGameStart',
   ApiPlayerJoin = 'ApiPlayerJoin',
   ApiPlayerList = 'ApiPlayerList',
   ApiRoomList = 'ApiRoomList',
   ApiRoomCreate = 'ApiRoomCreate',
   ApiRoomJoin = 'ApiRoomJoin',
   ApiRoomLeave = 'ApiRoomLeave',
+  ApiGameStart = 'ApiGameStart',
 }
