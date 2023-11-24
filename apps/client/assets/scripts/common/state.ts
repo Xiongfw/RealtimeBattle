@@ -7,6 +7,7 @@ export interface IVec2 {
 
 export interface IActor {
   id: number;
+  nickname: string;
   position: IVec2;
   direction: IVec2;
   type: EntityTypeEnum;

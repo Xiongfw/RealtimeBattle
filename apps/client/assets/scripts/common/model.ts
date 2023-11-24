@@ -1,5 +1,5 @@
 import { ApiMsgEnum } from './enum';
-import { IClientInput } from './state';
+import { IActor, IClientInput } from './state';
 
 export interface IPlayer {
   id: number;
@@ -50,6 +50,10 @@ export interface ApiModel {
     req: {};
     res: {};
   };
+  [ApiMsgEnum.ApiGameStart]: {
+    req: {};
+    res: {};
+  };
 }
 
 export interface MsgModel {
@@ -69,5 +73,8 @@ export interface MsgModel {
   };
   [ApiMsgEnum.MsgRoomInfo]: {
     room: IRoom;
+  };
+  [ApiMsgEnum.MsgGameStart]: {
+    actors: IActor[];
   };
 }

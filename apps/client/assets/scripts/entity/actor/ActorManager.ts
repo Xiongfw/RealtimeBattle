@@ -35,6 +35,9 @@ export class ActorManager extends EntityManager {
 
       this.weapon = weaponMgr;
     }
+
+    // 避免人物闪烁
+    this.node.active = false;
   }
 
   tick(dt: number) {
@@ -56,6 +59,9 @@ export class ActorManager extends EntityManager {
   }
 
   render(data: IActor) {
+    if (!this.node.active) {
+      this.node.active = true;
+    }
     const { direction, position } = data;
     this.node.setPosition(position.x, position.y);
     this.node.setScale(direction.x < 0 ? -1 : 1, 1, 1);

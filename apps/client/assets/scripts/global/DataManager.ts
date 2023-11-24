@@ -27,38 +27,7 @@ export default class DataManager extends Singleton {
   }
 
   state: IState = {
-    actors: [
-      {
-        id: 1,
-        type: EntityTypeEnum.Actor1,
-        weaponType: EntityTypeEnum.Weapon1,
-        bulletType: EntityTypeEnum.Bullet2,
-        hp: 100,
-        position: {
-          x: -150,
-          y: -150,
-        },
-        direction: {
-          x: 1,
-          y: 0,
-        },
-      },
-      {
-        id: 2,
-        type: EntityTypeEnum.Actor1,
-        weaponType: EntityTypeEnum.Weapon1,
-        bulletType: EntityTypeEnum.Bullet1,
-        hp: 100,
-        position: {
-          x: 150,
-          y: 150,
-        },
-        direction: {
-          x: -1,
-          y: 0,
-        },
-      },
-    ],
+    actors: [],
     bullets: [],
     nextBulletId: 0,
   };
