@@ -47,7 +47,7 @@ export class WeaponManager extends EntityManager {
       pointWorldPos.y - anchorWorldPos.y
     ).normalize();
 
-    DataManager.instance.applyInput({
+    EventManager.instance.emit(EventEnum.ClientSync, {
       owner: this.owner,
       type: InputTypeEnum.WeaponShoot,
       position: pointStagePos,
