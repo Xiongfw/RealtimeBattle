@@ -28,7 +28,7 @@ export class Connection extends EventEmitter {
         } else {
           if (this.map.has(name)) {
             this.map.get(name)!.forEach(({ cb, ctx }) => {
-              cb.apply(ctx, data);
+              cb.call(ctx, this, data);
             });
           }
         }
@@ -46,7 +46,11 @@ export class Connection extends EventEmitter {
     this.ws.send(JSON.stringify(msg));
   }
 
-  listenMsg<T extends keyof MsgModel>(name: T, cb: (data: MsgModel[T]) => void, ctx?: unknown) {
+  listenMsg<T extends keyof MsgModel>(
+    name: T,
+    cb: (connection: Connection, data: MsgModel[T]) => void,
+    ctx?: unknown
+  ) {
     if (this.map.has(name)) {
       this.map.get(name)!.push({ cb, ctx });
     } else {
@@ -54,7 +58,11 @@ export class Connection extends EventEmitter {
     }
   }
 
-  unlistenMsg<T extends keyof MsgModel>(name: T, cb: (data: MsgModel[T]) => void, ctx?: unknown) {
+  unlistenMsg<T extends keyof MsgModel>(
+    name: T,
+    cb: (connection: Connection, data: MsgModel[T]) => void,
+    ctx?: unknown
+  ) {
     if (this.map.has(name)) {
       const index = this.map.get(name)!.findIndex((i) => cb === i.cb && i.ctx === ctx);
       index > -1 && this.map.get(name)!.splice(index, 1);

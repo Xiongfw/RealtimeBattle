@@ -1,11 +1,23 @@
-import { ApiMsgEnum, EntityTypeEnum, IActor } from '../common';
+import {
+  ApiMsgEnum,
+  EntityTypeEnum,
+  IActor,
+  IClientInput,
+  InputTypeEnum,
+  MsgModel,
+} from '../common';
+import { Connection } from '../core';
 import { Player } from './Player';
 import { PlayerManager } from './PlayerManager';
 import { RoomManager } from './RoomManager';
 
 export class Room {
-  id: number;
-  players = new Set<Player>();
+  readonly id: number;
+  readonly players = new Set<Player>();
+  private pendingInputs: IClientInput[] = [];
+  private lastTime: number;
+
+  private timerList: NodeJS.Timeout[] = [];
 
   constructor(rid: number) {
     this.id = rid;
@@ -31,6 +43,10 @@ export class Room {
   }
 
   close() {
+    for (const player of this.players) {
+      player.connection.unlistenMsg(ApiMsgEnum.MsgClientSync, this.getClientMsg, this);
+    }
+    this.timerList.forEach((i) => clearInterval(i));
     this.players.clear();
   }
 
@@ -62,11 +78,43 @@ export class Room {
       };
     });
 
-    this.players.forEach((i) =>
-      i.connection.sendMsg(ApiMsgEnum.MsgGameStart, {
-        actors,
-      })
-    );
+    for (const player of this.players) {
+      player.connection.sendMsg(ApiMsgEnum.MsgGameStart, { actors });
+      player.connection.listenMsg(ApiMsgEnum.MsgClientSync, this.getClientMsg, this);
+    }
+
+    const timer1 = setInterval(() => {
+      this.sendServerMsg();
+    }, 100);
+
+    const timer2 = setInterval(() => {
+      this.timePast();
+    }, 16);
+
+    this.timerList.push(timer1, timer2);
+  }
+
+  getClientMsg(connection: Connection, { input, frameId }: MsgModel['MsgClientSync']) {
+    this.pendingInputs.push(input);
+  }
+
+  sendServerMsg() {
+    for (const player of this.players) {
+      player.connection.sendMsg(ApiMsgEnum.MsgServerSync, {
+        inputs: this.pendingInputs,
+        lastFrameId: 0,
+      });
+    }
+    this.pendingInputs.length = 0;
+  }
+
+  timePast() {
+    const now = process.uptime();
+    // 增量时间
+    const dt = now - (this.lastTime ?? now);
+    this.lastTime = now;
+
+    this.pendingInputs.push({ type: InputTypeEnum.TimePast, dt });
   }
 
   toJSON() {
