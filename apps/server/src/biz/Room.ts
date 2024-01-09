@@ -83,10 +83,12 @@ export class Room {
       player.connection.listenMsg(ApiMsgEnum.MsgClientSync, this.getClientMsg, this);
     }
 
+    // 操作同步, 人的反应时间是50~100ms 10-20FPS
     const timer1 = setInterval(() => {
       this.sendServerMsg();
     }, 100);
 
+    // delta 同步 (客户端渲染时间同步)
     const timer2 = setInterval(() => {
       this.timePast();
     }, 16);
